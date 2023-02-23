@@ -11,5 +11,6 @@
 			<attribute name="owner.project.facets" value="jst.web"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/spring-framework-3.0.2.RELEASE-dependencies"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
