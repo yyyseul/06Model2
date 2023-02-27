@@ -29,8 +29,10 @@ public class UserController {
 	@Qualifier("userServiceImpl")
 	private UserService userService;
 	//setter Method 구현 않음
-		
+	
+	///Constructor
 	public UserController(){
+		System.out.println("여기는 UserController 생성자");
 		System.out.println(this.getClass());
 	}
 	

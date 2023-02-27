@@ -14,6 +14,7 @@
 		<result property="price"	column="price"	jdbcType="INTEGER"/>
 		<result property="fileName"	column="image_file"	jdbcType="VARCHAR"/>
 		<result property="regDate"	column="reg_date"	jdbcType="DATE"/>
+		<result property="proTranCode"	column="tran_code"	jdbcType="CHAR"/>
 	</resultMap>
 	
 	<!-- SQL : INSERT -->
@@ -28,9 +29,10 @@
 	<!-- SQL : SELECT ONE -->
 	 <select 	id="getProduct"	parameterType="int"	resultMap="productSelectMap">
 		SELECT
-		prod_no, prod_name, prod_detail, manufacture_day, price, image_file, reg_date
-		FROM product
-		WHERE prod_no = #{value}
+		p.prod_no, p.prod_name, p.prod_detail, p.manufacture_day, p.price, p.image_file, p.reg_date, 
+		NVL(t.tran_status_code,'1') AS tran_code		
+		FROM product p, transaction t 
+		WHERE p.prod_no=t.prod_no(+) AND p.prod_no = #{value}
 	
 	</select>
 	
@@ -51,22 +53,23 @@
 	<select  id="getProductList"  parameterType="search"	resultMap="productSelectMap">
 	  	SELECT *
 	  	FROM (	SELECT inner_table.* , ROWNUM AS row_seq
-	  					FROM		(	SELECT prod_no, prod_name , price , reg_date
-											FROM product
+	  					FROM		(	SELECT p.*, NVL(t.tran_status_code,'1') AS tran_code
+											FROM product p, transaction t
+											WHERE p.prod_no=t.prod_no(+) 
 											<if test="searchCondition != null">
-												<where>
+												
 													<if test="searchCondition == 0 and searchKeyword !='' ">
-											 			prod_no = #{searchKeyword}
+											 			AND p.prod_no = #{searchKeyword}
 													</if>
 													<if test="searchCondition == 1 and searchKeyword !='' ">
-											 			prod_name like '%${searchKeyword}%'
+											 			AND p.prod_name LIKE '%${searchKeyword}%'
 													</if>
 													<if test="searchCondition == 2 and searchKeyword !='' ">
-											 			price = #{searchKeyword}
+											 			AND p.price = #{searchKeyword}
 													</if>
-												</where>
+												
 											</if>
-											ORDER BY prod_no ) inner_table
+											ORDER BY p.prod_no ) inner_table
 						WHERE ROWNUM &lt;= #{endRowNum} )
 		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum} 
 	 </select>
@@ -93,7 +96,7 @@
 						 			prod_no = #{searchKeyword}
 								</if>
 								<if test="searchCondition == 1 and searchKeyword !='' ">
-						 			prod_name like '%${searchKeyword}%'
+						 			prod_name LIKE '%${searchKeyword}%'
 								</if>
 								<if test="searchCondition == 2 and searchKeyword !='' ">
 						 			price = #{searchKeyword}

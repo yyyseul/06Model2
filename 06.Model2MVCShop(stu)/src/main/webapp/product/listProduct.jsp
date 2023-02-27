@@ -2,40 +2,10 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-
-<%-- /////////////////////// EL / JSTL 적용으로 주석 처리 //////////////////////// 		
-<%
-	List<Product> list = (List<Product>)request.getAttribute("list");
-	Page resultPage=(Page)request.getAttribute("resultPage");
-	Search search=(Search)request.getAttribute("search");
-	
-	//==> null 을 ""(nullString)으로 변경
-	String searchCondition = CommonUtil.null2str(search.getSearchCondition());
-	String searchKeyword = CommonUtil.null2str(search.getSearchKeyword());
-	
-	//menu값에 따라 페이지가 다르다
-	String menu= request.getParameter("menu");
-	
-	System.out.println("================"+menu+"====================");
-%>
-/////////////////////// EL / JSTL 적용으로 주석 처리 //////////////////////// --%>
 <html>
 <head>
 <title>
 
-<%--/////////////////EL/JSTL을 위한 주석/////////////////////
-	<%			
-		if(menu.equals("manage")){
-	%>
-		상품 관리
-	<%
-		}else if(menu.equals("seaech")){
-	%>
-		상품 목록조회
-	<%
-		}
-	%>
-/////////////////EL/JSTL을 위한 주석///////////////////// --%>
 	<c:if test="${!empty param.menu}">
 		<c:choose>
 			<c:when test="${param.menu eq 'manage'}">
@@ -77,20 +47,7 @@
 			<table width="100%" border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td width="93%" class="ct_ttl01">
-					<%--/////////////////EL/JSTL을 위한 주석/////////////////////
-					<%			
-						if(menu.equals("manage")){
-					%>
-						상품 관리
-					<%
-						}else if(menu.equals("seaech")){
-					%>
-						상품 목록조회
-					<%
-						}
-					%>
-				/////////////////EL/JSTL을 위한 주석///////////////////// --%>
-				
+					
 				<c:if test="${!empty param.menu}">
 					<c:choose>
 						<c:when test="${param.menu eq 'manage'}">
@@ -116,14 +73,7 @@
 	<tr>
 		<td align="right">
 			<select name="searchCondition" class="ct_input_g" style="width:80px">
-			<%--/////////////////EL/JSTL을 위한 주석/////////////////////
-				<option value="0" <%= (searchCondition.equals("0") ? "selected" : "")%>>상품번호</option>
-				<option value="1" <%= (searchCondition.equals("1") ? "selected" : "")%>>상품명</option>
-				<option value="2" <%= (searchCondition.equals("2") ? "selected" : "")%>>상품가격</option>
-			</select>
-			<input type="text" name="searchKeyword"  value= "<%=searchKeyword %>" class="ct_input_g" style="width:200px; height:19px" />
 			
-			/////////////////EL/JSTL을 위한 주석///////////////////// --%>
 			<option value="0"  ${ ! empty search.searchCondition && search.searchCondition==0 ? "selected" : "" }>상품번호</option>
 			<option value="1"  ${ ! empty search.searchCondition && search.searchCondition==1 ? "selected" : "" }>상품명</option>
 			<option value="2"  ${ ! empty search.searchCondition && search.searchCondition==2 ? "selected" : "" }>상품가격</option>
@@ -153,9 +103,7 @@
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
 	<tr>
-		<%--/////////////////EL/JSTL을 위한 주석/////////////////////
-		<td colspan="11" >전체 <%=resultPage.getTotalCount() %> 건수, 현재 <%=resultPage.getCurrentPage() %> 페이지</td>
-		/////////////////EL/JSTL을 위한 주석///////////////////// --%>
+		
 		<td colspan="11" >전체 ${resultPage.totalCount} 건수, 현재 ${resultPage.currentPage } 페이지</td>
 	</tr>
 	<tr>
@@ -172,34 +120,6 @@
 	<tr>
 		<td colspan="11" bgcolor="808285" height="1"></td>
 	</tr>
-	
-	<%--/////////////////EL/JSTL을 위한 주석/////////////////////
-	<%
-		for(int i=0; i<list.size(); i++) {
-			Product product = list.get(i);
-	%>
-	
-	<tr class="ct_list_pop">
-		<td align="center"><%=i+1%></td>
-		<td></td>
-		<td align="left">		<% if(menu.equals("manage")){%>
-						<td align="left"><a href="/updateProductView.do?prodNo=<%=product.getProdNo() %>&menu=<%= menu %>"><%=product.getProdName() %></a></td>
-					<% }else if(menu.equals("search")){%>
-						<td align="left"><a href="/getProduct.do?prodNo=<%=product.getProdNo() %>&menu=<%= menu %>"><%=product.getProdName() %></a></td>
-					<% }%>
-		</a></td>		
-		<td></td>
-		<td align="left"><%=product.getPrice() %></td>
-		<td></td>
-		<td align="left"><%=product.getRegDate() %></td>
-		<td></td>
-		<td align="left"><%=product.getProdDetail() %></td>	
-	
-	</tr>
-	<tr>
-		<td colspan="11" bgcolor="D6D7D6" height="1"></td>
-	</tr>
-	<% } %>	/////////////////EL/JSTL을 위한 주석///////////////////// --%>
 	
 	<c:set var="i" value="0" />
 	
@@ -228,14 +148,36 @@
 		<td></td>
 		<td align="left">${product.regDate }</td>
 		<td></td>
+		
+		<c:if test="${product.proTranCode eq null || product.proTranCode.trim() eq '1' }">
+			<td align="left">판매중</td>
+		</c:if>
+		
 		<c:choose>
+			<c:when test="${user.role eq 'user'}">
+				<c:choose>
+					<c:when test="${product.proTranCode.trim() eq '2'|| product.proTranCode.trim() eq '3' || product.proTranCode.trim() eq '4'}">
+						<td align="left">재고없음</td>
+					</c:when>
+				</c:choose>	
+			</c:when>
+			<c:when test="${user.role eq 'admin'}">
+				<c:choose>
+					<c:when test="${product.proTranCode.trim() eq '2' }">
+						<td align="left">			
+							판매완료 <a href="/updateTranCodeByProd.do?prodNo=${product.prodNo }&tranCode=${product.proTranCode.trim()}&currentPage=${resultPage.currentPage}"> 배송하기		
+						</td>
+					</c:when>
+					<c:when test="${product.proTranCode.trim() eq '3'}">
+						<td align="left">배송중</td>
+					</c:when>
+					<c:when test="${product.proTranCode.trim() eq '4'}">
+						<td align="left">배송완료</td>
+					</c:when>
+				</c:choose>	
 			
-			<c:when test="${product.proTranCode eq null || product.proTranCode eq '1' }">
-				<td align="left">판매중 ${product.proTranCode}</td>
 			</c:when>
-			<c:when test="${product.proTranCode eq '2'}">
-				<td align="left">판매완료  ${product.proTranCode}</td>
-			</c:when>
+		
 		</c:choose>
 	</tr>
 	<tr>
@@ -250,24 +192,7 @@
 	<tr>
 		<td align="center">
 		<input type="hidden" id="currentPage" name="currentPage" value=""/>
-		<%-- /////////////////////// EL / JSTL 적용으로 주석 처리 //////////////////////// 		   
-		<% if( resultPage.getCurrentPage() <= resultPage.getPageUnit() ){ %>
-			◀ 이전
-		<% }else{ %>
-			<a href="javascript:fncGetProductList('<%=resultPage.getCurrentPage()-1%>')">◀ 이전</a>
-		<% } %>
-
-		<%	for(int i=resultPage.getBeginUnitPage();i<= resultPage.getEndUnitPage() ;i++){	%>
-			<a href="javascript:fncGetProductList('<%=i %>');"><%=i %></a>
-		<% 	}  %>
-	
-		<% if( resultPage.getEndUnitPage() >= resultPage.getMaxPage() ){ %>
-			이후 ▶
-		<% }else{ %>
-			<a href="javascript:fncGetProductList('<%=resultPage.getEndUnitPage()+1%>')">이후 ▶</a>
-		<% } %>
-		 /////////////////////// EL / JSTL 적용으로 주석 처리 //////////////////////// --%>
-	
+		
 		<jsp:include page="../common/pageNavigator.jsp"/>	
     	</td>
 	</tr>

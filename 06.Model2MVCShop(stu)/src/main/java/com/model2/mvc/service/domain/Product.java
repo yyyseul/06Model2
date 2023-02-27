@@ -35,11 +35,11 @@ public class Product {
 	public String getManuDate() {
 		
 		//제조일자 형태때문에 발생할 오류 해결!
+		String maDa = "";
 		for (String date : manuDate.split("-")) {
-			manuDate += date;
+			maDa += date;
 		}
-			
-		return manuDate;
+		return maDa;
 	}
 	public void setManuDate(String manuDate) {
 		this.manuDate = manuDate;

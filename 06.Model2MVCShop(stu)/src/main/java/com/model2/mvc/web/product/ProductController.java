@@ -32,6 +32,7 @@ public class ProductController {
 
 	///Constructor
 	public ProductController() {
+		System.out.println("여기는 ProductController 생성자");
 		System.out.println(this.getClass());
 	}
 	
@@ -116,16 +117,8 @@ public class ProductController {
 	public String updateProduct(@ModelAttribute("product") Product product, Model model, HttpSession session) throws Exception{
 		
 		System.out.println("/updateProduct.do");
-		
-		if(product.getManuDate().length()>=9) {
-			String[] mda = product.getManuDate().split("-");
-			String str = mda[0]+mda[1]+mda[2];
-			product.setManuDate(str);
-		}
-		
-		productService.updateProduct(product);
-		
 	
+		productService.updateProduct(product);
 				
 		return "forward:/product/updateProduct.jsp";
 	}
