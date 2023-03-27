@@ -1,9 +1,11 @@
 <%@ page contentType="text/html; charset=EUC-KR"%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 
 <html>
 <head>
-
+<meta charset="UTF-8">
 <link rel="stylesheet" href="/css/admin.css" type="text/css">
 
 <title>상세상품조회</title>
@@ -18,6 +20,48 @@ function fncAddPurchase() {
 }
 -->
 </script>
+
+	<!--  카카오페이 구현하자-->
+	 <!-- jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
+    <!-- iamport.payment.js -->
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+	
+	
+	 <script>
+        var IMP = window.IMP; 
+        IMP.init("imp76832241"); 
+        
+        var today = new Date();   
+        var hours = today.getHours(); // 시
+        var minutes = today.getMinutes();  // 분
+        var seconds = today.getSeconds();  // 초
+        var milliseconds = today.getMilliseconds();
+        var makeMerchantUid = hours +  minutes + seconds + milliseconds;
+        
+
+        function requestPay() {
+            IMP.request_pay({
+                pg : 'kakaopay',
+                merchant_uid: "IMP"+makeMerchantUid, 
+                name : '${purchase.purchaseProd.prodNo }',
+                amount : 1,
+                buyer_email : 'Iamport@chai.finance',
+                buyer_name : '${purchase.buyer.userName }',
+                buyer_tel : '${purchase.buyer.phone }',
+                buyer_addr : '${purchase.buyer.addr }'
+            }, function (rsp) { // callback
+                if (rsp.success) {
+                	alert("카카오결제 성공");
+                    console.log(rsp);
+                } else {
+                	alert("결제 실패");
+                    console.log(rsp);
+                }
+            });
+        }
+    </script>
+    
 </head>
 
 <body>
@@ -128,6 +172,7 @@ function fncAddPurchase() {
 							style="width: 100px; height: 19px" maxLength="20">
 				<option value="1" selected="selected">현금구매</option>
 				<option value="2">신용구매</option>
+				<option value="3">카카오페이</option>
 			</select>
 		</td>
 	</tr>
@@ -203,8 +248,11 @@ function fncAddPurchase() {
 						<img src="/images/ct_btnbg01.gif" width="17" height="23"/>
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top: 3px;">
+									
 						<a href="javascript:fncAddPurchase();">구매</a>
 					</td>
+					
+					<button onclick="requestPay()">결제하기</button> <!-- 결제하기 버튼 생성 -->
 					<td width="14" height="23">
 						<img src="/images/ct_btnbg03.gif" width="14" height="23"/>
 					</td>
